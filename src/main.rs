@@ -137,10 +137,44 @@ async fn fetch_title_and_ogp(url: &str) -> Result<(String, HashMap<String, Strin
     let response = reqwest::get(url)
         .await
         .context("Failed to perform GET request")?;
+
     let body = response
         .text()
         .await
         .context("Failed to read response body")?;
+    let document = Html::parse_document(&body);
+
+    let charset_meta = document
+        .select(&Selector::parse(r#"meta[http-equiv="content-type"], meta[charset]"#).unwrap())
+        .filter_map(|meta| {
+            if let Some(content) = meta.value().attr("content") {
+                if content.to_lowercase().contains("shift_jis")
+                    || content.to_lowercase().contains("sjis")
+                {
+                    return Some("shift-jis".to_string());
+                }
+            }
+            if let Some(charset) = meta.value().attr("charset") {
+                if charset.to_lowercase().contains("shift_jis")
+                    || charset.to_lowercase().contains("sjis")
+                {
+                    return Some("shift-jis".to_string());
+                }
+            }
+            None
+        })
+        .next();
+
+    let body = if let Some(charset) = charset_meta {
+        reqwest::get(url)
+            .await
+            .context("Failed to perform GET request")?
+            .text_with_charset(&charset)
+            .await
+            .context("Failed to read response body with shift-jis charset")?
+    } else {
+        body
+    };
 
     let document = Html::parse_document(&body);
 
