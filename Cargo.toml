@@ -1,6 +1,6 @@
 [package]
 name = "clip-to-notion"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 description = "Efficiently fetch the title and metadata from a URL and tidily organize them into a Notion database."
 readme = "README.md"
