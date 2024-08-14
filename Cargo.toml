@@ -2,6 +2,12 @@
 name = "clip-to-notion"
 version = "0.1.0"
 edition = "2021"
+description = "Efficiently fetch the title and metadata from a URL and tidily organize them into a Notion database."
+readme = "README.md"
+repository = "https://github.com/tetzng/clip-to-notion"
+license = "Apache-2.0"
+keywords = ["notion", "bookmarks"]
+categories = ["command-line-utilities"]
 
 [dependencies]
 anyhow = "1.0.86"
