@@ -104,3 +104,59 @@ pub async fn post_to_notion(cfg: Config, url: &String, tags: &Vec<String>) -> Re
 
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use reqwest::header::{HeaderValue, AUTHORIZATION, CONTENT_TYPE};
+    use std::collections::HashMap;
+
+    #[test]
+    fn test_build_headers() {
+        let notion_api_key = "test_api_key";
+        let headers = build_headers(notion_api_key).unwrap();
+
+        assert_eq!(headers.get("Notion-Version").unwrap(), "2022-06-28");
+        assert_eq!(headers.get(CONTENT_TYPE).unwrap(), "application/json");
+        assert_eq!(
+            headers.get(AUTHORIZATION).unwrap(),
+            &HeaderValue::from_str("Bearer test_api_key").unwrap()
+        );
+    }
+
+    #[test]
+    fn test_build_notion_properties() {
+        let title = "Test Title";
+        let url = "https://example.com";
+        let tags = vec!["tag1".to_string(), "tag2".to_string()];
+        let database_id = "test_db_id";
+        let mut ogp_data = HashMap::new();
+        ogp_data.insert("og:description".to_string(), "Test Description".to_string());
+        ogp_data.insert(
+            "og:image".to_string(),
+            "https://example.com/image.png".to_string(),
+        );
+
+        let properties = build_notion_properties(&title, &url, &tags, &database_id, &ogp_data);
+
+        assert_eq!(
+            properties["properties"]["Name"]["title"][0]["text"]["content"],
+            title
+        );
+
+        assert_eq!(properties["properties"]["URL"]["url"], url);
+
+        assert_eq!(
+            properties["properties"]["Tags"]["multi_select"],
+            json!([{ "name": "tag1" }, { "name": "tag2" }])
+        );
+
+        let description = "Test Description";
+        assert_eq!(
+            properties["properties"]["Description"]["rich_text"][0]["text"]["content"].as_str(),
+            Some(description)
+        );
+
+        assert_eq!(properties["cover"]["external"]["url"], ogp_data["og:image"]);
+    }
+}
