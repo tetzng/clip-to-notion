@@ -16,7 +16,7 @@
 To install `ctn`, ensure you have Rust and Cargo installed, then run:
 
 ```sh
-make install
+cargo install clip-to-notion
 ```
 
 This will compile the project and install the ctn binary to your Cargo bin path.
