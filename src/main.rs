@@ -67,6 +67,7 @@ async fn main() -> Result<()> {
 
             let tags_json: Vec<_> = tags.iter().map(|tag| json!({ "name": tag })).collect();
             let database_id = cfg.database_id;
+            let description = ogp_data.get("og:description").unwrap();
 
             let mut properties = json!({
                 "parent": {
@@ -87,7 +88,18 @@ async fn main() -> Result<()> {
                     },
                     "Tags": {
                         "multi_select": tags_json
-                    }
+                    },
+                    "Description": {
+                        "rich_text": [
+                            {
+                                "type": "text",
+                                "text": {
+                                    "content": description,
+                                    "link": null,
+                                }
+                            }
+                        ]
+                    },
                 }
             });
 

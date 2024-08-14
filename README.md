@@ -8,6 +8,7 @@
 - A Notion database set up for clipping, with the following properties:
   - **Name**: Type `title`
   - **URL**: Type `url`
+  - **Description**: Type `text`
   - **Tags**: Type `multi-select` (only needed if using the `--tags` option)
 
 ## Installation
