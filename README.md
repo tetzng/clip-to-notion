@@ -1,6 +1,6 @@
 # Clip to Notion (ctn)
 
-`ctn` is a command-line tool for clipping web content directly to your Notion database. This tool fetches metadata like the title and Open Graph tags from a URL and stores the information in a specified Notion database.
+`ctn` is a command-line tool designed to efficiently fetch the title and metadata from any URL and tidily organize them into your Notion workspace. By extracting key information such as titles and Open Graph tags, `ctn` streamlines the process of saving and managing online content directly within your Notion database.
 
 ## Prerequisites
 
