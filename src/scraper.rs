@@ -1,3 +1,4 @@
+use crate::encoding::detect_charset;
 use anyhow::{Context, Result};
 use reqwest;
 use scraper::{Html, Selector};
@@ -14,26 +15,7 @@ pub async fn fetch_title_and_ogp(url: &str) -> Result<(String, HashMap<String, S
         .context("Failed to read response body")?;
     let document = Html::parse_document(&body);
 
-    let charset_meta = document
-        .select(&Selector::parse(r#"meta[http-equiv="content-type"], meta[charset]"#).unwrap())
-        .filter_map(|meta| {
-            if let Some(content) = meta.value().attr("content") {
-                if content.to_lowercase().contains("shift_jis")
-                    || content.to_lowercase().contains("sjis")
-                {
-                    return Some("shift-jis".to_string());
-                }
-            }
-            if let Some(charset) = meta.value().attr("charset") {
-                if charset.to_lowercase().contains("shift_jis")
-                    || charset.to_lowercase().contains("sjis")
-                {
-                    return Some("shift-jis".to_string());
-                }
-            }
-            None
-        })
-        .next();
+    let charset_meta = detect_charset(&document);
 
     let body = if let Some(charset) = charset_meta {
         reqwest::get(url)
@@ -48,13 +30,23 @@ pub async fn fetch_title_and_ogp(url: &str) -> Result<(String, HashMap<String, S
 
     let document = Html::parse_document(&body);
 
+    let title = extract_title(&document)?;
+    let ogp_data = extract_ogp_data(&document)?;
+
+    Ok((title, ogp_data))
+}
+
+fn extract_title(document: &Html) -> Result<String> {
     let title_selector = Selector::parse("title").unwrap();
     let title = document
         .select(&title_selector)
         .next()
         .map(|el| el.inner_html())
         .unwrap_or_default();
+    Ok(title)
+}
 
+fn extract_ogp_data(document: &Html) -> Result<HashMap<String, String>> {
     let meta_selector = Selector::parse(r#"meta[property^="og:"]"#).unwrap();
     let mut ogp_data = HashMap::new();
     for meta in document.select(&meta_selector) {
@@ -64,6 +56,5 @@ pub async fn fetch_title_and_ogp(url: &str) -> Result<(String, HashMap<String, S
             }
         }
     }
-
-    Ok((title, ogp_data))
+    Ok(ogp_data)
 }

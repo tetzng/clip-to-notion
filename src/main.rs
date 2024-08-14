@@ -1,5 +1,6 @@
 mod cli;
 mod config;
+mod encoding;
 mod notion;
 mod scraper;
 
