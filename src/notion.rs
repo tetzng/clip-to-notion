@@ -106,6 +106,58 @@ pub async fn post_to_notion(cfg: Config, url: &str, tags: &[String]) -> Result<(
     Ok(())
 }
 
+pub async fn create_database(cfg: Config) -> Result<()> {
+    let client = reqwest::Client::builder().build()?;
+    let headers = build_headers(&cfg.notion_api_key)?;
+    println!("Enter the Page ID where the database will be created:");
+    let page_id = crate::utils::read_input("Page ID")?;
+    let data = json!({
+        "parent": {
+            "type": "page_id",
+            "page_id": page_id
+        },
+        "title": [
+            {
+                "type": "text",
+                "text": {
+                    "content": "Articles",
+                }
+            }
+        ],
+        "properties": {
+            "Description": {
+                "type": "rich_text",
+                "rich_text": {}
+            },
+            "URL": {
+                "type": "url",
+                "url": {}
+            },
+            "Tags": {
+                "type": "multi_select",
+                "multi_select": {
+                    "options": []
+                }
+            },
+            "Name": {
+                "title": {}
+            }
+        }
+    });
+
+    let request = client
+        .request(reqwest::Method::POST, "https://api.notion.com/v1/databases")
+        .headers(headers)
+        .json(&data);
+
+    let response = request.send().await?;
+    let body = response.text().await?;
+
+    println!("{}", body);
+
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

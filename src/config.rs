@@ -1,7 +1,8 @@
+use crate::utils::read_input;
 use anyhow::{Context, Result};
 use directories::UserDirs;
 use serde::{Deserialize, Serialize};
-use std::{fs, io, io::Write};
+use std::{fs, io};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Config {
@@ -81,16 +82,4 @@ pub fn init_config() -> Result<()> {
     println!("Configuration file created at: {:?}", config_path);
 
     Ok(())
-}
-
-fn read_input(prompt: &str) -> Result<String> {
-    print!("{}: ", prompt);
-    io::stdout().flush().unwrap();
-
-    let mut input = String::new();
-    io::stdin()
-        .read_line(&mut input)
-        .context("Failed to read input")?;
-
-    Ok(input.trim().to_string())
 }
