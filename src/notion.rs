@@ -1,7 +1,6 @@
 use crate::config::Config;
 use crate::scraper::fetch_title_and_ogp;
 use anyhow::{Context, Result};
-use reqwest;
 use serde_json::json;
 use std::collections::HashMap;
 
@@ -19,7 +18,7 @@ fn build_headers(notion_api_key: &str) -> Result<reqwest::header::HeaderMap> {
 fn build_notion_properties(
     title: &str,
     url: &str,
-    tags: &Vec<String>,
+    tags: &[String],
     database_id: &str,
     ogp_data: &HashMap<String, String>,
 ) -> serde_json::Value {
@@ -77,16 +76,18 @@ fn build_notion_properties(
     properties
 }
 
-pub async fn post_to_notion(cfg: Config, url: &String, tags: &Vec<String>) -> Result<()> {
-    let (title, ogp_data) = fetch_title_and_ogp(&url)
+pub async fn post_to_notion(cfg: Config, url: &str, tags: &[String]) -> Result<()> {
+    let (title, ogp_data) = fetch_title_and_ogp(url)
         .await
         .context("Failed to fetch title and OGP data")?;
+    println!("Title: {}", title);
+    println!("OGP data: {:?}", ogp_data);
 
     let client = reqwest::Client::builder().build()?;
     let headers = build_headers(&cfg.notion_api_key)?;
 
     let database_id = cfg.database_id;
-    let properties = build_notion_properties(&title, &url, &tags, &database_id, &ogp_data);
+    let properties = build_notion_properties(&title, url, tags, &database_id, &ogp_data);
 
     let response = client
         .post("https://api.notion.com/v1/pages")
@@ -137,7 +138,7 @@ mod tests {
             "https://example.com/image.png".to_string(),
         );
 
-        let properties = build_notion_properties(&title, &url, &tags, &database_id, &ogp_data);
+        let properties = build_notion_properties(title, url, &tags, database_id, &ogp_data);
 
         assert_eq!(
             properties["properties"]["Name"]["title"][0]["text"]["content"],

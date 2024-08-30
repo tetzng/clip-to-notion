@@ -26,11 +26,7 @@ mod tests {
     fn test_cli_parse_init() {
         let args = vec!["prog", "init"];
         let cli = Cli::parse_from(args);
-        if let Command::Init = cli.command {
-            assert!(true);
-        } else {
-            panic!("Expected Command::Init");
-        }
+        assert!(matches!(cli.command, Command::Init));
     }
 
     #[test]

@@ -1,6 +1,5 @@
 use crate::encoding::detect_charset;
 use anyhow::{Context, Result};
-use reqwest;
 use scraper::{Html, Selector};
 use std::collections::HashMap;
 
@@ -85,7 +84,7 @@ mod tests {
             .create_async()
             .await;
 
-        let result = fetch_title_and_ogp(&server.url().as_str()).await;
+        let result = fetch_title_and_ogp(server.url().as_str()).await;
         assert!(result.is_ok());
         let (title, ogp_data) = result.unwrap();
         assert_eq!(title, "Example Title");

@@ -4,24 +4,21 @@ mod encoding;
 mod notion;
 mod scraper;
 
-use anyhow::Result;
 use clap::Parser;
 use cli::{Cli, Command};
 use config::load_config;
 
 #[tokio::main]
-async fn main() -> Result<()> {
+async fn main() {
     let cli = Cli::parse();
 
     match &cli.command {
         Command::Init => {
-            config::init_config()?;
+            config::init_config().unwrap();
         }
         Command::Run { url, tags } => {
-            let cfg = load_config()?;
-            notion::post_to_notion(cfg, url, tags).await?;
+            let cfg = load_config().unwrap();
+            notion::post_to_notion(cfg, url, tags).await.unwrap();
         }
     }
-
-    Ok(())
 }
