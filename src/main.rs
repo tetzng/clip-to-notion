@@ -15,7 +15,7 @@ async fn main() {
 
     match &cli.command {
         Command::Init => {
-            config::init_config().unwrap();
+            config::init_config().await.unwrap();
         }
         Command::Run { url, tags } => {
             let cfg = load_config().unwrap();
@@ -26,7 +26,11 @@ async fn main() {
             match cmd {
                 DbCommand::Create => {
                     let cfg = load_config().unwrap();
-                    notion::create_database(cfg).await.unwrap();
+
+                    let database_id = notion::create_database(cfg.notion_api_key.as_str())
+                        .await
+                        .unwrap();
+                    println!("Database created with ID: {}", database_id);
                 }
             }
         }

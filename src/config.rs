@@ -1,4 +1,4 @@
-use crate::utils::read_input;
+use crate::{notion, utils::read_input};
 use anyhow::{Context, Result};
 use directories::UserDirs;
 use serde::{Deserialize, Serialize};
@@ -39,7 +39,7 @@ pub(crate) fn load_config() -> Result<Config> {
     Ok(config)
 }
 
-pub(crate) fn init_config() -> Result<()> {
+pub(crate) async fn init_config() -> Result<()> {
     let user_dirs = UserDirs::new().context("Could not determine user directories")?;
     let config_dir = user_dirs.home_dir().join(".config/clip-to-notion");
 
@@ -68,8 +68,21 @@ pub(crate) fn init_config() -> Result<()> {
     println!("Enter your Notion API key:");
     let notion_api_key = read_input("API Key")?;
 
-    println!("Enter your Notion Database ID:");
-    let database_id = read_input("Database ID")?;
+    println!("Do you want to create a new Notion Database? (y/n): ");
+    let mut input = String::new();
+    io::stdin()
+        .read_line(&mut input)
+        .context("Failed to read input")?;
+    let input = input.trim().to_lowercase();
+
+    let database_id = if input == "y" {
+        let id = notion::create_database(&notion_api_key).await.unwrap();
+        println!("Database created with ID: {}", &id);
+        id
+    } else {
+        println!("Enter your Notion Database ID:");
+        read_input("Database ID")?
+    };
 
     let config = Config {
         notion_api_key,

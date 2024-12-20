@@ -1,6 +1,7 @@
 use crate::config::Config;
 use crate::scraper::fetch_title_and_ogp;
 use anyhow::{Context, Result};
+use serde::Deserialize;
 use serde_json::json;
 use std::collections::HashMap;
 
@@ -106,9 +107,14 @@ pub(crate) async fn post_to_notion(cfg: Config, url: &str, tags: &[String]) -> R
     Ok(())
 }
 
-pub(crate) async fn create_database(cfg: Config) -> Result<()> {
+#[derive(Deserialize)]
+struct DatabaseResponse {
+    id: String,
+}
+
+pub(crate) async fn create_database(notion_api_key: &str) -> Result<String> {
     let client = reqwest::Client::builder().build()?;
-    let headers = build_headers(&cfg.notion_api_key)?;
+    let headers = build_headers(notion_api_key)?;
     println!("Enter the Page ID where the database will be created:");
     let page_id = crate::utils::read_input("Page ID")?;
     let data = json!({
@@ -152,10 +158,9 @@ pub(crate) async fn create_database(cfg: Config) -> Result<()> {
 
     let response = request.send().await?;
     let body = response.text().await?;
+    let database: DatabaseResponse = serde_json::from_str(&body)?;
 
-    println!("{}", body);
-
-    Ok(())
+    Ok(database.id)
 }
 
 #[cfg(test)]
