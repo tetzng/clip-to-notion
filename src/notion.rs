@@ -76,7 +76,7 @@ fn build_notion_properties(
     properties
 }
 
-pub async fn post_to_notion(cfg: Config, url: &str, tags: &[String]) -> Result<()> {
+pub(crate) async fn post_to_notion(cfg: Config, url: &str, tags: &[String]) -> Result<()> {
     let (title, ogp_data) = fetch_title_and_ogp(url)
         .await
         .context("Failed to fetch title and OGP data")?;
@@ -106,7 +106,7 @@ pub async fn post_to_notion(cfg: Config, url: &str, tags: &[String]) -> Result<(
     Ok(())
 }
 
-pub async fn create_database(cfg: Config) -> Result<()> {
+pub(crate) async fn create_database(cfg: Config) -> Result<()> {
     let client = reqwest::Client::builder().build()?;
     let headers = build_headers(&cfg.notion_api_key)?;
     println!("Enter the Page ID where the database will be created:");

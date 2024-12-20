@@ -5,9 +5,9 @@ use serde::{Deserialize, Serialize};
 use std::{fs, io};
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct Config {
-    pub database_id: String,
-    pub notion_api_key: String,
+pub(crate) struct Config {
+    pub(crate) database_id: String,
+    pub(crate) notion_api_key: String,
 }
 
 impl Default for Config {
@@ -19,7 +19,7 @@ impl Default for Config {
     }
 }
 
-pub fn load_config() -> Result<Config> {
+pub(crate) fn load_config() -> Result<Config> {
     let user_dirs = UserDirs::new().context("Could not determine user directories")?;
     let config_dir = user_dirs
         .home_dir()
@@ -39,7 +39,7 @@ pub fn load_config() -> Result<Config> {
     Ok(config)
 }
 
-pub fn init_config() -> Result<()> {
+pub(crate) fn init_config() -> Result<()> {
     let user_dirs = UserDirs::new().context("Could not determine user directories")?;
     let config_dir = user_dirs.home_dir().join(".config/clip-to-notion");
 

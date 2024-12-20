@@ -3,7 +3,7 @@ use anyhow::{Context, Result};
 use scraper::{Html, Selector};
 use std::collections::HashMap;
 
-pub async fn fetch_title_and_ogp(url: &str) -> Result<(String, HashMap<String, String>)> {
+pub(crate) async fn fetch_title_and_ogp(url: &str) -> Result<(String, HashMap<String, String>)> {
     let response = reqwest::get(url)
         .await
         .context("Failed to perform GET request")?;

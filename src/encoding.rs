@@ -1,6 +1,6 @@
 use scraper::{Html, Selector};
 
-pub fn detect_charset(document: &Html) -> Option<String> {
+pub(crate) fn detect_charset(document: &Html) -> Option<String> {
     document
         .select(&Selector::parse(r#"meta[http-equiv="content-type"], meta[charset]"#).unwrap())
         .filter_map(|meta| {

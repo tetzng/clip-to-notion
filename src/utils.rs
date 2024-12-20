@@ -1,7 +1,7 @@
 use anyhow::{Context, Result};
 use std::{io, io::Write};
 
-pub fn read_input(prompt: &str) -> Result<String> {
+pub(crate) fn read_input(prompt: &str) -> Result<String> {
     print!("{}: ", prompt);
     io::stdout().flush().unwrap();
 

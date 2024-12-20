@@ -2,13 +2,13 @@ use clap::{Args, Parser, Subcommand};
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
-pub struct Cli {
+pub(crate) struct Cli {
     #[command(subcommand)]
-    pub command: Command,
+    pub(crate) command: Command,
 }
 
 #[derive(Subcommand, Debug)]
-pub enum Command {
+pub(crate) enum Command {
     Init,
     Run {
         url: String,
@@ -21,13 +21,13 @@ pub enum Command {
 
 #[derive(Debug, Args)]
 #[command(args_conflicts_with_subcommands = true)]
-pub struct DbArgs {
+pub(crate) struct DbArgs {
     #[command(subcommand)]
-    pub command: DbCommand,
+    pub(crate) command: DbCommand,
 }
 
 #[derive(Subcommand, Debug)]
-pub enum DbCommand {
+pub(crate) enum DbCommand {
     Create,
 }
 
