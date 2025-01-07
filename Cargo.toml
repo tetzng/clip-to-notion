@@ -11,7 +11,7 @@ categories = ["command-line-utilities"]
 
 [dependencies]
 anyhow = "1.0.95"
-clap = { version = "4.5.23", features = ["derive"] }
+clap = { version = "4.5.24", features = ["derive"] }
 directories = "5.0.1"
 reqwest = { version = "0.12.12", features = ["blocking", "json"] }
 scraper = "0.22.0"
