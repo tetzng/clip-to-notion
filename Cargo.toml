@@ -18,7 +18,7 @@ scraper = "0.22.0"
 serde = { version = "1.0.217", features = ["derive"] }
 serde_json = "1.0.138"
 tokio = { version = "1.43.0", features = ["full"] }
-toml = "0.8.19"
+toml = "0.8.20"
 
 [dev-dependencies]
 mockito = "1.6.1"
