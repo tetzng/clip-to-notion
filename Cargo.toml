@@ -10,7 +10,7 @@ keywords = ["notion", "bookmarks"]
 categories = ["command-line-utilities"]
 
 [dependencies]
-anyhow = "1.0.95"
+anyhow = "1.0.96"
 clap = { version = "4.5.30", features = ["derive"] }
 directories = "6.0.0"
 reqwest = { version = "0.12.12", features = ["blocking", "json"] }
